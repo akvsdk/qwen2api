@@ -1,10 +1,6 @@
 /**
- * Vercel Edge Runtime 入口 - 支持真正的流式输出
+ * Netlify Edge Functions 入口 - 支持真正的流式输出
  */
-
-export const config = {
-  runtime: 'edge',
-};
 
 // ============================================
 // Baxia Token 生成
@@ -105,8 +101,8 @@ function jsonResponse(body, status = 200, extraHeaders = {}) {
 // 认证
 // ============================================
 
-function validateToken(authHeader) {
-  const tokens = process.env.API_TOKENS ? process.env.API_TOKENS.split(',').filter(t => t.trim()) : [];
+function validateToken(authHeader, env) {
+  const tokens = env.API_TOKENS ? env.API_TOKENS.split(',').filter(t => t.trim()) : [];
   if (tokens.length === 0) return true;
   const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
   return tokens.includes(token);
@@ -116,8 +112,8 @@ function validateToken(authHeader) {
 // API Handlers
 // ============================================
 
-async function handleModels(authHeader) {
-  if (!validateToken(authHeader)) {
+async function handleModels(authHeader, env) {
+  if (!validateToken(authHeader, env)) {
     return jsonResponse({ error: { message: 'Incorrect API key provided.', type: 'invalid_request_error' } }, 401);
   }
   try {
@@ -130,8 +126,8 @@ async function handleModels(authHeader) {
   }
 }
 
-async function handleChatCompletions(body, authHeader) {
-  if (!validateToken(authHeader)) {
+async function handleChatCompletions(body, authHeader, env) {
+  if (!validateToken(authHeader, env)) {
     return jsonResponse({ error: { message: 'Incorrect API key provided.', type: 'invalid_request_error' } }, 401);
   }
 
@@ -144,7 +140,7 @@ async function handleChatCompletions(body, authHeader) {
   const { bxUa, bxUmidToken, bxV } = await getBaxiaTokens();
 
   // 检查是否启用搜索
-  const enableSearch = (process.env.ENABLE_SEARCH || '').toLowerCase() === 'true';
+  const enableSearch = (env.ENABLE_SEARCH || '').toLowerCase() === 'true';
   const chatType = enableSearch ? 'search' : 't2t';
 
   // 创建会话
@@ -307,10 +303,12 @@ async function handleChatCompletions(body, authHeader) {
 }
 
 // ============================================
-// Handler 入口
+// Edge Handler 入口
 // ============================================
 
-export default async function handler(request) {
+export default async function handler(request, context) {
+  const env = context.env || {};
+  
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       headers: { 
@@ -326,13 +324,18 @@ export default async function handler(request) {
   const authHeader = request.headers.get('Authorization') || '';
 
   if (request.method === 'GET' && path.includes('/v1/models')) {
-    return handleModels(authHeader);
+    return handleModels(authHeader, env);
   }
   if (request.method === 'POST' && path.includes('/v1/chat/completions')) {
-    return handleChatCompletions(await request.json(), authHeader);
+    return handleChatCompletions(await request.json(), authHeader, env);
   }
   if (request.method === 'GET' && (path === '/' || path === '')) {
     return new Response('<html><head><title>200 OK</title></head><body><center><h1>200 OK</h1></center><hr><center>nginx</center></body></html>', { headers: { 'Content-Type': 'text/html' } });
   }
   return jsonResponse({ error: { message: 'Not found' } }, 404);
 }
+
+export const config = {
+  path: "/*",
+  excludedPath: ["/.netlify/*"]
+};
