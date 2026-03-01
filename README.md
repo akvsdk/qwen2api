@@ -1,23 +1,23 @@
 # Qwen2API
 
-将 Qwen Chat 转换为 OpenAI 兼容的 API 代理服务。
+A proxy service that converts Qwen Chat to an OpenAI-compatible API.
 
-## 功能特性
+## Features
 
-- 🔄 OpenAI API 兼容格式
-- 🚀 支持流式响应 (SSE)
-- 🔐 可选的 API Token 认证
-- 🌐 多平台部署支持
+- 🔄 OpenAI API compatible format
+- 🚀 Streaming response support (SSE)
+- 🔐 Optional API Token authentication
+- 🌐 Multi-platform deployment support
 
-## 部署方式
+## Deployment
 
 ### Docker
 
 ```bash
-# 构建镜像
+# Build image
 docker build -t qwen2api .
 
-# 运行容器
+# Run container
 docker run -d -p 8765:8765 -e API_TOKENS=your_token qwen2api
 ```
 
@@ -25,74 +25,74 @@ docker run -d -p 8765:8765 -e API_TOKENS=your_token qwen2api
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/smanx/qwen2api)
 
-1. Fork 本仓库
-2. 在 Vercel 中导入项目
-3. 可选：设置环境变量 `API_TOKENS`
+1. Fork this repository
+2. Import the project in Vercel
+3. Optional: Set environment variable `API_TOKENS`
 
 ### Netlify
 
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/smanx/qwen2api)
 
-1. Fork 本仓库
-2. 在 Netlify 中导入项目
-3. 可选：设置环境变量 `API_TOKENS`
+1. Fork this repository
+2. Import the project in Netlify
+3. Optional: Set environment variable `API_TOKENS`
 
 ### Cloudflare Workers
 
 ```bash
-# 安装 wrangler
+# Install wrangler
 npm install -g wrangler
 
-# 登录
+# Login
 wrangler login
 
-# 部署
+# Deploy
 wrangler deploy
 ```
 
-在 Cloudflare Dashboard 中设置环境变量 `API_TOKENS`。
+Set the environment variable `API_TOKENS` in the Cloudflare Dashboard.
 
-## 公共服务
+## Public Services
 
-提供两个公共服务供测试使用：
+Two public services are available for testing:
 
-| 服务地址 | 平台 |
-|----------|------|
-| `https://qwen2api-v.smanx.xx.kg` | 开启联网搜索 |
-| `https://qwen2api-n.smanx.xx.kg` | 未开联网搜索 |
+| Service URL | Platform |
+|-------------|----------|
+| `https://qwen2api-v.smanx.xx.kg` | With web search enabled |
+| `https://qwen2api-n.smanx.xx.kg` | Without web search |
 
-- 无需 API Token（密钥为空）
-- 建议自行部署以获得更稳定的服务
+- No API Token required (leave key empty)
+- Self-deployment is recommended for more stable service
 
-## 注意事项
+## Important Notes
 
-- ⚠️ 本项目 API 只支持纯文本对话，不支持图片、文件等多模态内容
+- ⚠️ This API only supports plain text conversations; multimodal content such as images and files is not supported
 
-## 环境变量
+## Environment Variables
 
-| 变量名 | 说明 | 必填 |
-|--------|------|------|
-| `API_TOKENS` | API 密钥，多个用逗号分隔 | 否 |
-| `ENABLE_SEARCH` | 是否启用搜索功能，设置为 `true` 开启 | 否 |
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `API_TOKENS` | API keys, multiple keys separated by commas | No |
+| `ENABLE_SEARCH` | Enable search functionality, set to `true` to enable | No |
 
-## 使用方法
+## Usage
 
-### API 端点
+### API Endpoints
 
-| 端点 | 方法 | 说明 |
-|------|------|------|
-| `/v1/models` | GET | 获取模型列表 |
-| `/v1/chat/completions` | POST | 聊天完成 |
-| `/` | GET | 健康检查 |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/v1/models` | GET | Get model list |
+| `/v1/chat/completions` | POST | Chat completion |
+| `/` | GET | Health check |
 
-### 请求示例
+### Request Examples
 
 ```bash
-# 获取模型列表
+# Get model list
 curl https://your-domain/v1/models \
   -H "Authorization: Bearer your_token"
 
-# 聊天完成
+# Chat completion
 curl https://your-domain/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your_token" \
@@ -103,7 +103,7 @@ curl https://your-domain/v1/chat/completions \
   }'
 ```
 
-### OpenAI SDK 示例
+### OpenAI SDK Examples
 
 ```python
 from openai import OpenAI
@@ -142,46 +142,46 @@ for await (const chunk of stream) {
 }
 ```
 
-## 支持的模型
+## Supported Models
 
 - `qwen3.5-plus`
 - `qwen3.5-flash`
 - `qwen3.5-turbo`
-- 以及 Qwen Chat 支持的其他模型
+- And other models supported by Qwen Chat
 
-## 项目结构
+## Project Structure
 
 ```
 qwen2api/
-├── core.js              # 核心业务逻辑
-├── index.js             # Docker / 本地入口
+├── core.js              # Core business logic
+├── index.js             # Docker / Local entry point
 ├── api/
-│   └── index.js         # Vercel 入口
+│   └── index.js         # Vercel entry point
 ├── netlify/
 │   └── functions/
-│       └── api.js       # Netlify 入口
-├── worker.js            # Cloudflare Workers 入口
+│       └── api.js       # Netlify entry point
+├── worker.js            # Cloudflare Workers entry point
 ├── Dockerfile
 ├── vercel.json
 ├── netlify.toml
 └── wrangler.toml
 ```
 
-## 本地开发
+## Local Development
 
 ```bash
-# 安装依赖
+# Install dependencies
 npm install
 
-# 启动开发服务器
+# Start development server
 npm run dev
 
-# 服务运行在 http://localhost:8765
+# Server runs at http://localhost:8765
 ```
 
-## 免责声明
+## Disclaimer
 
-本项目仅供学习和测试使用，请勿用于生产环境或商业用途。使用本项目所产生的一切后果由使用者自行承担，与项目作者无关。
+This project is for learning and testing purposes only. Do not use it in production or commercial environments. Users are solely responsible for any consequences arising from the use of this project, and the project author assumes no liability.
 
 ## License
 
