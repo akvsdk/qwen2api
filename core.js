@@ -2,7 +2,16 @@
  * 核心业务逻辑 - 所有平台共用
  */
 
-const { v4: uuidv4 } = require('uuid');
+// ============================================
+// UUID 生成 (内联，避免 ESM 问题)
+// ============================================
+
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
 
 // ============================================
 // 配置
@@ -298,5 +307,5 @@ module.exports = {
   createResponse,
   validateToken,
   getBaxiaTokens,
-  uuidv4: () => uuidv4(),
+  uuidv4,
 };
