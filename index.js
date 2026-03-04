@@ -160,7 +160,7 @@ async function serverlessHandler(req, res) {
 function startExpressServer() {
   const express = require('express');
   const app = express();
-  const jsonLimit = process.env.JSON_BODY_LIMIT || '20mb';
+  const jsonLimit = process.env.JSON_BODY_LIMIT || '100mb';
   app.use(express.json({ limit: jsonLimit }));
 
   app.use((error, req, res, next) => {
