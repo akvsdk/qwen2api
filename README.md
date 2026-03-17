@@ -89,6 +89,13 @@ Two public services are available for testing:
 - ✅ Supports image understanding and document parsing workflows in chat requests.
 - ⚠️ Attachments are uploaded to Qwen OSS through the same workflow used by Qwen Web, so request latency increases when sending large files.
 
+### Limitations (Video URL / Large Files)
+
+- Video URL analysis and large-file analysis are **not supported on serverless function deployments** (e.g. Vercel / Netlify Functions / Cloudflare Workers).
+  These environments typically have strict limits on runtime, request body size, and filesystem/process access.
+- Video URL analysis requires `yt-dlp` to be installed on the host machine.
+  Use the Docker/local Express deployment if you need this feature.
+
 ### Attachment Compatibility (OpenAI-style)
 
 You can use these message content part formats in `messages[].content` arrays:
@@ -120,7 +127,16 @@ The proxy also accepts legacy message-level `files` / `attachments` arrays for c
 |----------|--------|-------------|
 | `/v1/models` | GET | Get model list |
 | `/v1/chat/completions` | POST | Chat completion |
+| `/chat` | GET | Built-in web chat UI |
 | `/` | GET | Health check |
+
+### Web Chat UI
+
+Open `https://your-domain/chat` in a browser to use the built-in chat page.
+
+- Supports streaming output, attachments, and an optional video URL (auto switches to video analysis when a URL is provided)
+- Logs panel can be toggled on/off; when enabled the request uses `/v1/chat/completions/log`
+- Language toggle (ZH/EN) is available in the top bar
 
 ### Request Examples
 

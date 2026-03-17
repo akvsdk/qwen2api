@@ -73,6 +73,13 @@ wrangler deploy
 - ✅ 支持图片理解与文档解析流程（可在对话中直接使用）。
 - ⚠️ 附件会按 Qwen Web 的流程先上传到 Qwen OSS，文件较大时请求耗时会增加。
 
+### 限制说明（视频链接 / 大文件）
+
+- 通过视频链接分析、以及上传大文件进行分析：**不支持无服务器函数部署**（例如 Vercel / Netlify Functions / Cloudflare Workers）。
+  这类环境通常会受限于运行时长、请求体大小、以及文件系统/子进程能力。
+- 视频链接分析还需要宿主机安装 `yt-dlp` 工具。
+  如需使用该能力，请选择 Docker / 本地 Express 部署。
+
 ### 附件兼容格式（OpenAI 风格）
 
 `messages[].content` 支持以下分段格式：
@@ -106,7 +113,16 @@ wrangler deploy
 |------|------|------|
 | `/v1/models` | GET | 获取模型列表 |
 | `/v1/chat/completions` | POST | 聊天完成 |
+| `/chat` | GET | 内置 Web 聊天页面 |
 | `/` | GET | 健康检查 |
+
+### Web 聊天页面
+
+在浏览器打开 `https://your-domain/chat` 即可使用内置聊天 UI。
+
+- 支持流式输出、附件上传、可选视频链接（填写链接后发送会自动进入视频分析；留空为普通对话）
+- 可切换日志面板；开启后请求会使用 `/v1/chat/completions/log`
+- 顶部栏提供中英文切换
 
 ### 请求示例
 
